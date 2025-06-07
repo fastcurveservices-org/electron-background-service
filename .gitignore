@@ -1,0 +1,53 @@
+# Node modules
+node_modules/
+
+# Electron build output
+dist/
+build/
+out/
+
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env settings
+.env
+.env.local
+.env.*.local
+
+# VS Code config
+.vscode/
+
+# Compiled JavaScript (if using TypeScript)
+*.tsbuildinfo
+
+# Cache
+.cache/
+*.log
+
+# Electron-builder config (auto-generated)
+*.exe
+*.dmg
+*.AppImage
+*.deb
+*.snap
+*.msi
+*.blockmap
+latest*.yml
+
+# GitHub Actions artifacts
+*.tgz
+
+# Custom build files
+scripts/version.js
+build/version.js
+
+# Optional:
+coverage/

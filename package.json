@@ -1,0 +1,39 @@
+{
+  "name": "electron-background-service",
+  "version": "1.7.0",
+  "main": "main.js",
+  "description": "A background service Electron app that runs on system startup",
+  "author": "Your Name",
+  "scripts": {
+    "prestart": "node scripts/prebuild.js",
+    "start": "electron .",
+    "predist": "node scripts/prebuild.js",
+    "build": "electron-builder",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "publish": null,
+    "appId": "com.yourcompany.backgroundservice",
+    "productName": "ElectronBackgroundService",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "trayIcon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "auto-launch": "^5.0.5",
+    "electron-builder": "^24.13.0"
+  }
+}
