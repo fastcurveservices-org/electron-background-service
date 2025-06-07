@@ -8,6 +8,7 @@
     "prestart": "node scripts/prebuild.js",
     "start": "electron .",
     "predist": "node scripts/prebuild.js",
+    "buildMac": "electron-builder --mac",
     "build": "electron-builder",
     "dist": "electron-builder"
   },
@@ -22,6 +23,9 @@
       "**/*",
       "!dist"
     ],
+    "mac": {
+      "target": "dmg"
+    },
     "win": {
       "target": "nsis",
       "icon": "trayIcon.ico"
