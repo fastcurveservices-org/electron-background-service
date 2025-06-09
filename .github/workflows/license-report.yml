@@ -30,9 +30,19 @@ jobs:
         run: node generate-license-md.js
 
       - name: Commit LICENSES.md if changed
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
-          git add LICENSES.md
-          git diff --staged --quiet || git commit -m "Update LICENSES.md with latest license summary"
-          git push
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+
+          if ! git diff --quiet LICENSES.md; then
+            git add LICENSES.md
+            git commit -m "Update LICENSES.md with latest license summary"
+            git push origin HEAD:${{ github.ref_name }}
+          else
+            echo "No changes to commit"
+          fi
+
+
