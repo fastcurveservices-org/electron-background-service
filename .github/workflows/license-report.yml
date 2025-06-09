@@ -32,29 +32,29 @@ jobs:
       - name: Generate LICENSES.md file
         run: node generate-license-md.js
 
-      - name: Setup git for gh-pages branch push
+      - name: Configure git user
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
 
-      - name: Clone gh-pages branch
-        run: |
-          git clone --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} gh-pages || \
-          (git clone https://github.com/${{ github.repository }} gh-pages && cd gh-pages && git checkout --orphan gh-pages)
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
-      - name: Copy LICENSES.md to gh-pages
-        run: |
-          cp LICENSES.md gh-pages/LICENSES.md
+      - name: Copy LICENSES.md to gh-pages branch
+        run: cp LICENSES.md gh-pages/LICENSES.md
 
-      - name: Commit and push changes to gh-pages
+      - name: Commit and push LICENSES.md if changed
         working-directory: gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git add LICENSES.md
           if ! git diff --cached --exit-code; then
             git commit -m "Update LICENSES.md license report"
             git push origin gh-pages
           else
-            echo "No changes in LICENSES.md to commit."
+            echo "No changes to LICENSES.md to commit."
           fi
