@@ -51,3 +51,4 @@ build/version.js
 
 # Optional:
 coverage/
+licenses.json
