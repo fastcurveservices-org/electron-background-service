@@ -1,43 +1,39 @@
 # .github/workflows/license-report.yml
-name: Generate License Report
+name: Generate HTML License Report
 
 on:
   push:
     branches: [main]
 
 jobs:
-  license-report:
+  generate-license-report:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Install license-report CLI
-        run: npm install license-report@latest
+      - name: Install license-checker tools
+        run: |
+          npm install -g license-checker
+          npm install -g license-checker-html
 
-      - name: Generate HTML license report
-        run: npx license-report --output license-report.html --format html
+      - name: Generate license JSON
+        run: license-checker --json > licenses.json
 
-      - name: Upload HTML report
+      - name: Convert to HTML report
+        run: license-checker-html -i licenses.json -o license-report.html
+
+      - name: Upload license report artifact
         uses: actions/upload-artifact@v4
         with:
           name: license-report
           path: license-report.html
-
-
-      # OPTIONAL: Publish to GitHub Pages
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          publish_branch: gh-license-pages
