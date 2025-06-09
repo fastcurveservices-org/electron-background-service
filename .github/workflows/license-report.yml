@@ -1,0 +1,62 @@
+name: Generate License Report
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  license-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install license-checker
+        run: npm install -g license-checker
+
+      - name: Generate license report JSON
+        run: license-checker --json > licenses.json
+
+      - name: Generate HTML and Markdown reports
+        run: |
+          node generate-license-html.js
+          node generate-license-md.js
+
+      - name: Upload license HTML as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-report
+          path: license-report.html
+
+      - name: Deploy license report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
+          keep_files: true
+
+      - name: Update README.md with license report link
+        run: |
+          LINK="📄 [View Full License Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/license-report.html)"
+          TABLE=$(cat LICENSES.md)
+
+          # Replace section in README.md
+          awk '/<!-- LICENSE-START -->/{print;print TABLE;found=1;next}
+               /<!-- LICENSE-END -->/{found=0;print;next}
+               !found' TABLE="$TABLE" README.md > tmp.md && mv tmp.md README.md
+
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add README.md
+          git commit -m "Update README with license report and table" || echo "No changes to commit"
+          git push

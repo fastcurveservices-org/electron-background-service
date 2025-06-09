@@ -34,4 +34,3 @@ html += `
 `;
 
 fs.writeFileSync('license-report.html', html);
-console.log('✅ HTML license report generated as license-report.html');
