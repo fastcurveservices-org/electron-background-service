@@ -2,7 +2,8 @@ name: Generate and Update License Summary
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main   # change to your branch if needed
 
 jobs:
   license-report:
@@ -26,7 +27,7 @@ jobs:
       - name: Generate license JSON report
         run: license-checker --json > licenses.json
 
-      - name: Generate LICENSES.md
+      - name: Generate LICENSES.md from JSON
         run: node generate-license-md.js
 
       - name: Commit LICENSES.md if changed
@@ -35,10 +36,18 @@ jobs:
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
+
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
 
-          if ! git diff --quiet LICENSES.md; then
-            git add LICENSES.md
+          git add LICENSES.md
+
+          echo "Git status:"
+          git status
+
+          echo "Git diff (staged):"
+          git diff --cached || true
+
+          if ! git diff --cached --exit-code; then
             git commit -m "Update LICENSES.md with latest license summary"
             git push origin HEAD:${{ github.ref_name }}
           else
