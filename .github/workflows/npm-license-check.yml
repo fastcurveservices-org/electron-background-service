@@ -1,38 +1,37 @@
 # .github/workflows/license-report.yml
-name: Generate HTML License Report
+name: Generate NPM License Report
 
 on:
   push:
     branches: [main]
 
 jobs:
-  generate-license-report:
+  license-report:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Install license-checker tools
-        run: |
-          npm install -g license-checker
-          npm install -g license-checker-html
+      - name: Install license-checker
+        run: npm install -g license-checker
 
-      - name: Generate license JSON
+      - name: Generate license report JSON
         run: license-checker --json > licenses.json
 
-      - name: Convert to HTML report
-        run: license-checker-html -i licenses.json -o license-report.html
+      - name: Generate HTML report
+        run: |
+          node generate-license-html.js
 
-      - name: Upload license report artifact
+      - name: Upload license report
         uses: actions/upload-artifact@v4
         with:
           name: license-report
