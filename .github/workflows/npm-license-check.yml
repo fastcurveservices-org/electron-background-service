@@ -13,17 +13,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Install license-report CLI
+        run: npm install license-report@latest
+
       - name: Generate HTML license report
-        run: |
-          npx license-report --output license-report.html --format html
+        run: npx license-report --output license-report.html --format html
 
       - name: Upload HTML report
         uses: actions/upload-artifact@v4
@@ -31,9 +33,11 @@ jobs:
           name: license-report
           path: license-report.html
 
+
       # OPTIONAL: Publish to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: .
+          publish_branch: gh-license-pages
