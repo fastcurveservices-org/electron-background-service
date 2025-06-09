@@ -1,35 +1,42 @@
-# .github/workflows/npm-license-check.yml
-name: NPM License Checker
+# .github/workflows/license-report.yml
+name: Generate NPM License Report
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
-  check-licenses:
+  generate-license-report:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Run license checker and generate report
+      - name: Generate License Report in HTML
         run: |
-          npx license-checker --json > licenses.json
-          cat licenses.json
+          npx license-checker-rseidelsohn --html > license-report.html
 
-      - name: Upload license report as artifact
+      - name: Upload HTML License Report as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: license-report
-          path: licenses.json
+          path: license-report.html
+
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
+          keep_files: true
+          user_name: github-actions
+          user_email: github-actions@github.com
